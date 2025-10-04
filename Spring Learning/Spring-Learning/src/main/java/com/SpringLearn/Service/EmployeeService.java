@@ -2,6 +2,7 @@ package com.SpringLearn.Service;
 
 import com.SpringLearn.DTO.EmployeeDTO;
 import com.SpringLearn.Entities.*;
+import com.SpringLearn.Exceptions.ResourceNotFoundException;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -35,8 +36,9 @@ public class EmployeeService {
 	
 	public EmployeeDTO getEmployeeById(int id)
 	{
+		isEmployeeExists(id);
 		Optional<Employee> employee = repo.findById(id);
-		return employee.map(emp -> mp.map(emp, EmployeeDTO.class)).orElse(null);
+		return employee.map(emp -> mp.map(emp, EmployeeDTO.class)).orElseThrow(()->new ResourceNotFoundException("Employee not found with ID: "+ id ));
 	}
 
 	public EmployeeDTO addEmployee(EmployeeDTO eml) {
@@ -60,25 +62,18 @@ public class EmployeeService {
 		return mp.map(emplSaved, EmployeeDTO.class);
 	}
 
-	public String  deleteEmployeeById(int employeeId) {
+	public EmployeeDTO  deleteEmployeeById(int employeeId) {
 		
-		boolean exists = repo.existsById(employeeId);
-		if(!exists)
-		{
-			return "Employee not found !";
-		}
-		
+		isEmployeeExists(employeeId);
+		Employee getEmpl = repo.findById(employeeId).orElse(null);
 		repo.deleteById(employeeId);
-		
-		return "Employee Deleted";
+		return  mp.map(getEmpl, EmployeeDTO.class);
 		
 	}
 
 	public EmployeeDTO partialUpdateEmployeeById(int employeeId, Map<String, Object> updates) {
 
-		boolean exists = repo.existsById(employeeId);
-		if(!exists) return null;
-		
+		isEmployeeExists(employeeId);
 		Employee savedEmpl = repo.findById(employeeId).get();
 		updates.forEach((key,value) -> {
 			
@@ -88,6 +83,11 @@ public class EmployeeService {
 			
 		});
 		return mp.map(repo.save(savedEmpl), EmployeeDTO.class);
+	}
+	
+	void isEmployeeExists(int employeeId)
+	{
+		if(repo.existsById(employeeId)== false) throw new ResourceNotFoundException("Employee not found with ID: "+ employeeId );
 	}
 
 }

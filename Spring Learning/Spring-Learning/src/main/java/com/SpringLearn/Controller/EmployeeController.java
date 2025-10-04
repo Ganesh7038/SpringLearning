@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.SpringLearn.DTO.EmployeeDTO;
+import com.SpringLearn.Exceptions.ResourceNotFoundException;
 import com.SpringLearn.Service.EmployeeService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/employees")
@@ -38,15 +41,13 @@ public class EmployeeController {
 	@GetMapping("{employeeId}")
 	public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable (name = "employeeId") int id )
 	{
-		
-		EmployeeDTO savedEmp =  serv.getEmployeeById(id);
-		if(savedEmp == null) return ResponseEntity.notFound().build();
-		return ResponseEntity.ok(savedEmp);
+
+		return ResponseEntity.ok(serv.getEmployeeById(id));
 	}
 	
 
 	@PostMapping("/object")
-	public ResponseEntity<EmployeeDTO> addEmployee(@RequestBody EmployeeDTO eml )
+	public ResponseEntity<EmployeeDTO> addEmployee(@RequestBody @Valid EmployeeDTO eml )
 	{
 		return new ResponseEntity<>(serv.addEmployee(eml),HttpStatus.CREATED);
 	}
@@ -58,9 +59,9 @@ public class EmployeeController {
 	}
 	
 	@DeleteMapping("/{employeeId}")
-	public String deleteEmployeeById(@PathVariable int employeeId )
+	public ResponseEntity<EmployeeDTO> deleteEmployeeById(@PathVariable int employeeId )
 	{
-		return serv.deleteEmployeeById(employeeId);
+		return  ResponseEntity.ok(serv.deleteEmployeeById(employeeId));
 	}
 	
 	@PatchMapping("/{employeeId}")

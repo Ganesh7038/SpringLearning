@@ -1,58 +1,54 @@
 package com.SpringLearn.DTO;
 
+import java.time.LocalDate;
+
+import com.SpringLearn.Annotations.EmployeeRoleValidator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class EmployeeDTO {
 	
-	private int id;
+	int id;
+	
+	@NotBlank( message = "Employee Name cannot be blank.")
+	@Size(min =3, max = 15)
 	private String name;
+	
+	@NotNull
+	@Min(value = 18 , message = "Employee age cannot be less than 18.")
+	@Max(value = 60 , message = "Employee age cannot be more than 60.")
 	private int age;
+	
+	@NotBlank
 	private String gender;
+	
+	@NotNull
+	@AssertTrue(message = "Employee must be active.")
+	@JsonProperty("isActive")
 	private boolean isActive;
 	
+	@Digits(integer = 5 , fraction =2)
+	private double salary;
 	
+	@NotBlank
+	@Email( message = "Email is not valid.")
+	private String email;
 	
-	public EmployeeDTO() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	//@Pattern(regexp = "^(ADMIN|USER)$", message = "Role can either be USER or ADMIN.")
 	
-	public EmployeeDTO(int id, String name, int age, String gender, boolean isActive) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.age = age;
-		this.gender = gender;
-		this.isActive = isActive;
-	}
+	@EmployeeRoleValidator
+	private String role;
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public int getAge() {
-		return age;
-	}
-	public void setAge(int age) {
-		this.age = age;
-	}
-	public String getGender() {
-		return gender;
-	}
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-	public boolean isActive() {
-		return isActive;
-	}
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
+	@PastOrPresent
+	private LocalDate dateOfJoining;
 
 }
