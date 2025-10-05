@@ -38,7 +38,7 @@ public class EmployeeService {
 	{
 		isEmployeeExists(id);
 		Optional<Employee> employee = repo.findById(id);
-		return employee.map(emp -> mp.map(emp, EmployeeDTO.class)).orElseThrow(()->new ResourceNotFoundException("Employee not found with ID: "+ id ));
+		return employee.map(emp -> mp.map(emp, EmployeeDTO.class)).orElse(null);
 	}
 
 	public EmployeeDTO addEmployee(EmployeeDTO eml) {
