@@ -11,6 +11,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +32,13 @@ public class EmployeeService {
 		this.mp = mp;
 	}
 	
-	public List<EmployeeDTO> getEmployees()
+	public Page<EmployeeDTO> getEmployees(String sortBy, int pageNum)
 	{
-		List<Employee> empList =  repo.findAll();
-		return empList.stream().map(empl -> mp.map(empl, EmployeeDTO.class)).collect(Collectors.toList());
+		//Sort sort = Sort.by(sortBy).descending();
+		
+		Pageable  pageable = PageRequest.of(pageNum,2, Sort.by(sortBy).ascending());
+		Page<Employee> empPage =  repo.findAll(pageable);
+		return empPage.map(empl -> mp.map(empl, EmployeeDTO.class));
 	}
 	
 	public EmployeeDTO getEmployeeById(int id)
@@ -83,6 +90,11 @@ public class EmployeeService {
 			
 		});
 		return mp.map(repo.save(savedEmpl), EmployeeDTO.class);
+	}
+	
+	public List<EmployeeDTO> findByGenderOrderBySalary(String gender)
+	{
+		return repo.findByGenderOrderBySalaryDesc(gender).stream().map(emp -> mp.map(emp, EmployeeDTO.class)).toList();
 	}
 	
 	void isEmployeeExists(int employeeId)

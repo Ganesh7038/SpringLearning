@@ -3,6 +3,7 @@ package com.SpringLearn.Controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.SpringLearn.DTO.EmployeeDTO;
@@ -32,8 +34,11 @@ public class EmployeeController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<EmployeeDTO>> getEmployees() {
-		return ResponseEntity.ok(serv.getEmployees());
+	public ResponseEntity<Page<EmployeeDTO>> getEmployees(@RequestParam (  defaultValue = "name" ) String sortBy ,
+														  @RequestParam ( defaultValue = "0" ) int pageNum 
+			                                             ) {
+		
+		return ResponseEntity.ok(serv.getEmployees(sortBy,pageNum));
 	}
 
 	@GetMapping("{employeeId}")
@@ -61,6 +66,12 @@ public class EmployeeController {
 	public EmployeeDTO partialUpdateEmployeeById(@PathVariable int employeeId,
 			@RequestBody Map<String, Object> updates) {
 		return serv.partialUpdateEmployeeById(employeeId, updates);
+	}
+	
+	@GetMapping("/gender/{gender}")
+	public ResponseEntity<List<EmployeeDTO>> findByGenderOrderBySalary(@PathVariable String gender)
+	{
+		return ResponseEntity.ok(serv.findByGenderOrderBySalary(gender));
 	}
 
 }
